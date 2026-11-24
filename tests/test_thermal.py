@@ -1,8 +1,14 @@
-"""Tests for the dependency-free observational trend estimator."""
+"""Unit tests for the dependency-free temperature trend module."""
+import importlib.util
 import unittest
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
-from custom_components.ai_smart_home_pro.thermal import calculate_trend
+MODULE = Path(__file__).resolve().parents[1] / "custom_components" / "ai_smart_home_pro" / "thermal.py"
+spec = importlib.util.spec_from_file_location("thermal_under_test", MODULE)
+thermal = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(thermal)
+calculate_trend = thermal.calculate_trend
 
 
 class TrendTests(unittest.TestCase):
