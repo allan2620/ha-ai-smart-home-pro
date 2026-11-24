@@ -20,6 +20,7 @@ DESCRIPTIONS = (
     SensorEntityDescription(key="target", name="Ønsket temperatur", native_unit_of_measurement="°C", icon="mdi:thermometer-check"),
     SensorEntityDescription(key="recommended", name="Rådgivende temperatur", native_unit_of_measurement="°C", icon="mdi:lightbulb-thermometer"),
     SensorEntityDescription(key="trend", name="Temperaturtrend", native_unit_of_measurement="°C/h", icon="mdi:chart-line"),
+    SensorEntityDescription(key="data_quality", name="Datadækning", icon="mdi:database-check"),
     SensorEntityDescription(key="sample_count", name="Temperaturmålinger", icon="mdi:counter"),
     SensorEntityDescription(key="advice", name="Varmeråd", icon="mdi:comment-text-outline"),
 )

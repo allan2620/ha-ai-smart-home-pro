@@ -1,39 +1,33 @@
 # AI Smart Home PRO
 
-Private, locally running custom integration for Home Assistant. **Version 0.2.0** is an early, advisory-only prototype.
+Private Home Assistant custom integration — development version **0.3.0**, advisory-only.
 
-## Features
+## New in 0.3.0
 
-- UI setup for indoor and outdoor temperature sensors, optionally electricity price and heat pump power, and a target room temperature.
-- Temperature recommendation limited to ±0.5 °C around the configured target (informational only).
-- Observed indoor temperature trend in °C/hour, calculated from at least 30 minutes of readings; the first trend appears after sufficient observation.
-- Current sample count and basic diagnostic sensor values.
-- No device writes, external APIs, trained AI, forecast, automatic heating curve or persistent learning yet.
+- Retains up to 72 hours of indoor temperature observations in Home Assistant local `.storage` (coalesced saves; most recent readings may not be saved before a sudden power loss).
+- Restores valid observations on restart, filters corrupt, stale and implausible records.
+- Adds a **Datadækning** sensor indicating whether enough historical observations are available.
+- Displays observed indoor temperature trend in °C/hour after 30 minutes of data.
+- Existing advisory setpoint never controls hardware and remains limited to ±0.5 °C relative to target.
 
-## Installation
+**Not yet a trained AI model:** datadækning reflects history coverage only, not forecast accuracy; the observed temperature slope is not a causal estimate of thermal loss. No weather forecast, tariff optimization, writing to IVT/Nilan or automatic curve changes yet.
 
-### Manual (supported during development)
-Download this repository as a ZIP from GitHub. Copy `custom_components/ai_smart_home_pro` to `/config/custom_components/ai_smart_home_pro` on your Home Assistant instance. Restart Home Assistant, then select **Settings → Devices & services → Add integration → AI Smart Home PRO**.
+## Manual installation/update
 
-### HACS (experimental)
-If you have HACS, add this private repository as a **Custom repository** with category **Integration** (access to private repositories depends on your GitHub/HACS authorization). Then install and restart. If HACS cannot access the private repository, use the manual approach.
+The repository is private; standard HACS installation may report GitHub Not Found. Use **Code → Download ZIP** on GitHub while signed in, extract and copy `custom_components/ai_smart_home_pro` to `/config/custom_components/ai_smart_home_pro` (overwriting the older integration), then restart Home Assistant. Add the integration in **Settings → Devices & services** if not already added.
 
-## Suggested initial sensor choices
+Configure existing sensors. Indoor suggestion: `sensor.boiler_room_nilan_user_panel_temperature_t15` provided it reflects the room to be heated. Optional price: `sensor.energi_data_service`; check units on original entities.
 
-Indoor: `sensor.boiler_room_nilan_user_panel_temperature_t15` (only if representative of your actual living space). For outdoor temperature, use an actual temperature sensor exposed by your heat pump, e.g. `sensor.vvm_320_e_aktuel_udetemperatur_bt1_40004` when available. Optional price: `sensor.energi_data_service`.
+No credentials or `secrets.yaml` belong in this repository.
 
-## Important limitations
+## Tests
 
-- All values are advisory; no changes to equipment.
-- Trend uses RAM samples and resets on Home Assistant restart. It is **not** yet a persistent learned thermal model.
-- No price optimization yet. Price and power sensors are displayed as-is, with units left unconverted; check the original sensors.
-- Sensor accuracy and representativeness are crucial. Verify readings before using recommendations for decisions.
-- Never commit secrets or credentials to this repository.
+`python -m compileall -q custom_components`
 
-## Local tests
+`python -m unittest discover -s tests -v`
 
-Run `python -m compileall -q custom_components` and `python -m unittest discover -s tests -v` from repository root. GitHub Actions runs those checks on push.
+GitHub Actions runs both on every push. Real-world Home Assistant compatibility must still be confirmed on the user's own installation.
 
-## Roadmap
+## Next steps
 
-Persistent historical learning, confidence scores, 24/48h forecasts, DK1/N1 price optimization, read-only integration adapters for Nilan / IVT, EV and irrigation, and only then separately approved safe control modes.
+Longer-term per-zone diagnostics, sensor quality flags, weather and tariffs, validated thermal modeling, and later opt-in control with explicit safeguards.

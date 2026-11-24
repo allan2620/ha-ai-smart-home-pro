@@ -11,8 +11,9 @@ PLATFORMS = ["sensor"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up an entry and its coordinator."""
+    """Set up an entry and load retained observations."""
     coordinator = SmartHomeCoordinator(hass, entry)
+    await coordinator.async_load_history()
     await coordinator.async_refresh()
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
