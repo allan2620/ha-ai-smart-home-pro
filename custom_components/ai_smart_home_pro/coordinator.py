@@ -5,7 +5,10 @@ Never calls services or writes device values.
 """
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
+from collections import deque
+
+from .thermal import calculate_trend
 from math import isfinite
 
 from homeassistant.config_entries import ConfigEntry
@@ -69,6 +72,7 @@ class SmartHomeCoordinator(DataUpdateCoordinator[dict]):
             update_interval=timedelta(seconds=SCAN_INTERVAL_SECONDS),
         )
         self.entry = entry
+        self._indoor_history = deque(maxlen=288)
 
     async def _async_update_data(self) -> dict:
         """Compute advisory data without network calls or device writes."""
@@ -78,6 +82,12 @@ class SmartHomeCoordinator(DataUpdateCoordinator[dict]):
         price = numeric_state(self.hass, cfg.get(CONF_PRICE))
         power = numeric_state(self.hass, cfg.get(CONF_POWER))
         target = float(cfg.get(CONF_TARGET, DEFAULT_TARGET))
+        if indoor is not None and 5 <= indoor <= 40:
+            self._indoor_history.append((datetime.now(timezone.utc), indoor))
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+        while self._indoor_history and self._indoor_history[0][0] < cutoff:
+            self._indoor_history.popleft()
+        trend = calculate_trend(self._indoor_history)
         recommended, advice = calculate_advice(indoor, outdoor, target)
         return {
             "indoor": indoor,
@@ -87,4 +97,6 @@ class SmartHomeCoordinator(DataUpdateCoordinator[dict]):
             "target": target,
             "recommended": recommended,
             "advice": advice,
+            "trend": trend,
+            "sample_count": len(self._indoor_history),
         }
