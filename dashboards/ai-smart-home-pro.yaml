@@ -86,6 +86,64 @@ views:
           viser kompressor, omskifterventil og cirkulationspumper ud fra
           de tilknyttede Husdata-sensorer. Tryk på et symbol eller tal for
           at se flere oplysninger. Dette panel styrer ikke varmepumpen.
+      - type: markdown
+        title: AI-varmeanbefaling til IVT
+        content: >-
+          {% set actual = states('sensor.ai_smart_home_pro_indetemperatur') | float(none) %}
+          {% set target = states('sensor.ai_smart_home_pro_onsket_temperatur') | float(none) %}
+          {% set proposed = states('sensor.ai_smart_home_pro_radgivende_temperatur') | float(none) %}
+          {% if actual is none or target is none or proposed is none %}
+          ## ⚪ Afventer AI-målinger
+
+          Kontrollér at AI Smart Home PRO er konfigureret, og at
+          temperatur-sensorerne har gyldige værdier.
+          {% elif proposed > target + 0.05 %}
+          ## 🔥 Mere varme
+
+          Indetemperaturen er **{{ actual | round(1) }} °C**, og målet er
+          **{{ target | round(1) }} °C**.
+          Den rådgivende model foreslår **{{ proposed | round(1) }} °C**.
+          {% elif proposed < target - 0.05 %}
+          ## ❄️ Mindre varme
+
+          Indetemperaturen er **{{ actual | round(1) }} °C**, og målet er
+          **{{ target | round(1) }} °C**.
+          Den rådgivende model foreslår **{{ proposed | round(1) }} °C**.
+          {% else %}
+          ## ✅ Uændret
+
+          Indetemperaturen er **{{ actual | round(1) }} °C** og
+          ønsket temperatur **{{ target | round(1) }} °C**.
+          Den rådgivende model anbefaler ingen ændring.
+          {% endif %}
+
+          **Temperaturstatus:** {{ states('sensor.ai_smart_home_pro_temperaturstatus') }}
+
+          **Trend:** {{ states('sensor.ai_smart_home_pro_temperaturtrend') }} °C/time
+
+          **Datadækning:** {{ states('sensor.ai_smart_home_pro_datadaekning') }}
+
+          **Bemærk:** Anbefalingen er kun en rumtemperatur-vurdering,
+          ikke en anbefalet IVT-varmekurve eller fremløbstemperatur.
+          Intet ændres automatisk.
+      - type: entities
+        title: AI + IVT – Samlet driftsbillede
+        show_header_toggle: false
+        entities:
+          - entity: sensor.boiler_room_nilan_user_panel_temperature_t15
+            name: Aktuel rumtemperatur
+          - entity: sensor.ai_smart_home_pro_onsket_temperatur
+            name: Ønsket rumtemperatur
+          - entity: sensor.ai_smart_home_pro_radgivende_temperatur
+            name: Rådgivende rumtemperatur
+          - entity: sensor.hp_outdoor
+            name: IVT udetemperatur
+          - entity: sensor.hp_heat_carrier_forwrd
+            name: IVT fremløb
+          - entity: sensor.hp_heat_carrier_return
+            name: IVT retur
+          - entity: binary_sensor.hp_compressor
+            name: Kompressor
       - type: picture-elements
         image: https://portal.husdata.se/img/BV_3_HA.png
         theme: Nordic Night

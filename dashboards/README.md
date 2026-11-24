@@ -59,3 +59,20 @@ Uden card-mod eller tema vil det almindelige billedkort stadig kunne vises.
 Dette er et **dashboard** – ikke en ændring af integrationskoden. Efter opdatering
 af dashboard-YAML på GitHub skal du også indsætte den nye YAML i dit
 Home Assistant-dashboard; HACS synkroniserer ikke et UI-oprettet dashboard automatisk.
+
+## AI-anbefaling sammen med IVT
+
+Øverst på fanen **IVT Jordvarme** vises nu et dynamisk Markdown-kort med
+**Mere varme**, **Mindre varme**, **Uændret** eller **Afventer AI-målinger**.
+Det sammenligner det rådgivende rumtemperaturforslag fra integrationen
+med det indstillede rumtemperaturmål. Det er **ikke** en ordre til IVT
+og viser **ikke** anbefalet ændring af varmekurve eller fremløb.
+
+Kortet kræver, at entiteterne
+`sensor.ai_smart_home_pro_indetemperatur`,
+`sensor.ai_smart_home_pro_onsket_temperatur` og
+`sensor.ai_smart_home_pro_radgivende_temperatur` findes.
+Home Assistant kan bruge andre entity-id'er; ret dem i dashboard-YAML,
+hvis kortet viser "Afventer AI-målinger".
+
+Der vises desuden aktuelle IVT-målinger fra eksisterende Husdata-entiteter.
