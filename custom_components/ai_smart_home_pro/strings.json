@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AI Smart Home PRO",
+        "description": "Vælg dine eksisterende sensorer. Integrationen er kun rådgivende og ændrer ikke på anlægget.",
+        "data": {
+          "indoor_temperature": "Indetemperatur sensor",
+          "outdoor_temperature": "Udetemperatur sensor",
+          "electricity_price": "Elpris sensor (valgfri)",
+          "heat_pump_power": "Varmepumpe effekt (valgfri)",
+          "target_temperature": "Ønsket rumtemperatur"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Integrationen er allerede konfigureret."
+    }
+  }
+}
