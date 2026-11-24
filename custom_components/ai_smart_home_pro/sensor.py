@@ -22,6 +22,9 @@ DESCRIPTIONS = (
     SensorEntityDescription(key="trend", name="Temperaturtrend", native_unit_of_measurement="°C/h", icon="mdi:chart-line"),
     SensorEntityDescription(key="data_quality", name="Datadækning", icon="mdi:database-check"),
     SensorEntityDescription(key="sample_count", name="Temperaturmålinger", icon="mdi:counter"),
+    SensorEntityDescription(key="pair_count", name="Sammenhørende temperaturmålinger", icon="mdi:database"),
+    SensorEntityDescription(key="average_gap", name="Gennemsnitlig temperaturforskel 24t", native_unit_of_measurement="°C", icon="mdi:thermometer-lines"),
+    SensorEntityDescription(key="temperature_status", name="Temperaturstatus", icon="mdi:home-analytics"),
     SensorEntityDescription(key="advice", name="Varmeråd", icon="mdi:comment-text-outline"),
 )
 

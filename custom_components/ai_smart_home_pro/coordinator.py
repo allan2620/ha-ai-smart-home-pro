@@ -1,4 +1,4 @@
-"""Read-only advisor with locally persisted temperature observations."""
+"""Read-only temperature advisor with locally persisted measurements."""
 from __future__ import annotations
 
 from collections import deque
@@ -15,14 +15,17 @@ from .const import (
     CONF_INDOOR, CONF_OUTDOOR, CONF_PRICE, CONF_POWER,
     CONF_TARGET, DEFAULT_TARGET, DOMAIN, SCAN_INTERVAL_SECONDS,
 )
-from .thermal import calculate_trend, quality_label, restore_history
+from .thermal import (
+    calculate_trend, quality_label, restore_history, restore_pairs,
+    mean_temperature_gap, heating_observation,
+)
 
 _LOGGER = logging.getLogger(__name__)
 HISTORY_HOURS = 72
 
 
 def numeric_state(hass: HomeAssistant, entity_id: str | None) -> float | None:
-    """Read valid numeric sensor values, never replace unavailable with zero."""
+    """Safely read numeric entity state."""
     if not entity_id:
         return None
     state = hass.states.get(entity_id)
@@ -36,7 +39,7 @@ def numeric_state(hass: HomeAssistant, entity_id: str | None) -> float | None:
 
 
 def calculate_advice(indoor: float | None, outdoor: float | None, target: float):
-    """Return a conservative suggested target and a diagnostic message."""
+    """Provide a small informational target adjustment."""
     if indoor is None or outdoor is None:
         return None, "Afventer gyldige temperaturmålinger"
     difference = target - indoor
@@ -53,35 +56,36 @@ def calculate_advice(indoor: float | None, outdoor: float | None, target: float)
 
 
 class SmartHomeCoordinator(DataUpdateCoordinator[dict]):
-    """Collect observations and publish informational-only diagnostics."""
+    """Collect measurements without writing any device settings."""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         super().__init__(
-            hass,
-            logger=_LOGGER,
-            name="AI Smart Home PRO",
+            hass, logger=_LOGGER, name="AI Smart Home PRO",
             update_interval=timedelta(seconds=SCAN_INTERVAL_SECONDS),
         )
         self.entry = entry
         self._indoor_history = deque(maxlen=HISTORY_HOURS * 12)
+        self._paired_history = deque(maxlen=HISTORY_HOURS * 12)
         self._store = Store(hass, 1, f"{DOMAIN}_{entry.entry_id}_history")
 
     async def async_load_history(self) -> None:
-        """Restore previous valid observations before initial refresh."""
         data = await self._store.async_load()
         now = datetime.now(timezone.utc)
-        history = restore_history(data.get("samples") if isinstance(data, dict) else None, now)
-        self._indoor_history.extend(history)
+        if not isinstance(data, dict):
+            return
+        self._indoor_history.extend(restore_history(data.get("samples"), now))
+        self._paired_history.extend(restore_pairs(data.get("pairs"), now))
 
     def _schedule_history_save(self) -> None:
-        """Coalesce disk writes via Home Assistant's storage helper."""
         self._store.async_delay_save(
-            lambda: {"samples": [[stamp.isoformat(), temp] for stamp, temp in self._indoor_history]},
+            lambda: {
+                "samples": [[t.isoformat(), i] for t, i in self._indoor_history],
+                "pairs": [[t.isoformat(), i, o] for t, i, o in self._paired_history],
+            },
             600,
         )
 
     async def _async_update_data(self) -> dict:
-        """Refresh using only existing entity states."""
         cfg = self.entry.data
         indoor = numeric_state(self.hass, cfg[CONF_INDOOR])
         outdoor = numeric_state(self.hass, cfg[CONF_OUTDOOR])
@@ -90,20 +94,29 @@ class SmartHomeCoordinator(DataUpdateCoordinator[dict]):
         target = float(cfg.get(CONF_TARGET, DEFAULT_TARGET))
         now = datetime.now(timezone.utc)
         cutoff = now - timedelta(hours=HISTORY_HOURS)
-        while self._indoor_history and self._indoor_history[0][0] < cutoff:
-            self._indoor_history.popleft()
+        for history in (self._indoor_history, self._paired_history):
+            while history and history[0][0] < cutoff:
+                history.popleft()
+        changed = False
         if indoor is not None and 5 <= indoor <= 40:
-            # Skip duplicate timestamps within a minute (e.g. manual refresh).
             if not self._indoor_history or (now - self._indoor_history[-1][0]).total_seconds() >= 60:
                 self._indoor_history.append((now, indoor))
-                self._schedule_history_save()
-
+                changed = True
+            if outdoor is not None and -45 <= outdoor <= 55:
+                if not self._paired_history or (now - self._paired_history[-1][0]).total_seconds() >= 60:
+                    self._paired_history.append((now, indoor, outdoor))
+                    changed = True
+        if changed:
+            self._schedule_history_save()
+        trend = calculate_trend(self._indoor_history)
         recommended, advice = calculate_advice(indoor, outdoor, target)
         return {
             "indoor": indoor, "outdoor": outdoor, "price": price,
             "power": power, "target": target, "recommended": recommended,
-            "advice": advice,
-            "trend": calculate_trend(self._indoor_history),
+            "advice": advice, "trend": trend,
             "sample_count": len(self._indoor_history),
             "data_quality": quality_label(self._indoor_history),
+            "pair_count": len(self._paired_history),
+            "average_gap": mean_temperature_gap(self._paired_history),
+            "temperature_status": heating_observation(trend, indoor, target),
         }
