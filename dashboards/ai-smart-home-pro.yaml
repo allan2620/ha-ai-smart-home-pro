@@ -1,0 +1,100 @@
+title: AI Smart Home PRO
+views:
+  - title: Overblik
+    path: overblik
+    icon: mdi:home-analytics
+    type: masonry
+    cards:
+      - type: markdown
+        title: AI Smart Home PRO
+        content: >-
+          ## Intelligent varmeoverblik
+          
+          **Drift:** Rådgivende – integrationen ændrer ikke på varmeanlægget.
+          
+          Opdateres løbende fra dine sensorer. Temperaturhistorikken gemmes
+          lokalt i Home Assistant i op til 72 timer.
+      - type: glance
+        title: Temperaturer
+        show_name: true
+        entities:
+          - entity: sensor.ai_smart_home_pro_indetemperatur
+            name: Inde
+          - entity: sensor.ai_smart_home_pro_udetemperatur
+            name: Ude
+          - entity: sensor.ai_smart_home_pro_onsket_temperatur
+            name: Ønsket
+          - entity: sensor.ai_smart_home_pro_radgivende_temperatur
+            name: Anbefalet
+      - type: entities
+        title: Hvad sker der lige nu?
+        show_header_toggle: false
+        entities:
+          - entity: sensor.ai_smart_home_pro_temperaturstatus
+            name: Temperaturstatus
+          - entity: sensor.ai_smart_home_pro_varmerad
+            name: Varmeråd
+          - entity: sensor.ai_smart_home_pro_temperaturtrend
+            name: Temperaturændring pr. time
+          - entity: sensor.ai_smart_home_pro_datadaekning
+            name: Datadækning
+      - type: history-graph
+        title: Temperaturer – sidste 24 timer
+        hours_to_show: 24
+        refresh_interval: 60
+        entities:
+          - entity: sensor.ai_smart_home_pro_indetemperatur
+            name: Indetemperatur
+          - entity: sensor.ai_smart_home_pro_udetemperatur
+            name: Udetemperatur
+          - entity: sensor.ai_smart_home_pro_onsket_temperatur
+            name: Mål
+      - type: entities
+        title: Energi og datagrundlag
+        show_header_toggle: false
+        entities:
+          - entity: sensor.ai_smart_home_pro_elpris_kildens_enhed
+            name: Elpris (kildens enhed)
+          - entity: sensor.ai_smart_home_pro_varmepumpeeffekt_kildens_enhed
+            name: Varmepumpeeffekt (kildens enhed)
+          - entity: sensor.ai_smart_home_pro_gennemsnitlig_temperaturforskel_24t
+            name: Gennemsnitlig inde-/udeforskel
+          - entity: sensor.ai_smart_home_pro_sammenhorende_temperaturmalinger
+            name: Sammenhørende temperaturmålinger
+          - entity: sensor.ai_smart_home_pro_temperaturmalinger
+            name: Indetemperaturmålinger
+      - type: markdown
+        title: Om beregningerne
+        content: >-
+          **Temperaturtrend:** målt ændring i °C/time – ikke en prognose.
+          
+          **Temperaturforskel:** gennemsnitlig inde minus ude for seneste
+          døgn, når der er nok målinger – ikke et beregnet varmetab.
+          
+          **Datadækning:** hvor meget historik der er; ikke AI-sikkerhed.
+          
+          Ingen automatisk regulering af IVT, Nilan eller gulvvarme.
+  - title: Historik
+    path: historik
+    icon: mdi:chart-line
+    type: masonry
+    cards:
+      - type: history-graph
+        title: Temperatur – sidste 72 timer
+        hours_to_show: 72
+        entities:
+          - sensor.ai_smart_home_pro_indetemperatur
+          - sensor.ai_smart_home_pro_udetemperatur
+          - sensor.ai_smart_home_pro_onsket_temperatur
+      - type: history-graph
+        title: Temperaturtrend – sidste 72 timer
+        hours_to_show: 72
+        entities:
+          - sensor.ai_smart_home_pro_temperaturtrend
+      - type: entities
+        title: Analysegrundlag
+        entities:
+          - sensor.ai_smart_home_pro_datadaekning
+          - sensor.ai_smart_home_pro_temperaturmalinger
+          - sensor.ai_smart_home_pro_sammenhorende_temperaturmalinger
+          - sensor.ai_smart_home_pro_gennemsnitlig_temperaturforskel_24t

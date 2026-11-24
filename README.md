@@ -2,6 +2,10 @@
 
 Public Home Assistant custom integration — experimental **v0.4.0**, entirely advisory.
 
+## Dashboard i sidepanelet
+
+Et nyt dansk overvågningsdashboard findes i [dashboards/ai-smart-home-pro.yaml](dashboards/ai-smart-home-pro.yaml). Se [installationsvejledningen](dashboards/README.md). Dashboardet er separat fra integrationen og skal oprettes én gang under Home Assistants Dashboards; HACS installerer ikke automatisk dashboardet.
+
 ## v0.4.0 — Indoor/outdoor observation
 
 - Retains up to 72 hours of local indoor temperature observations (introduced in v0.3).
