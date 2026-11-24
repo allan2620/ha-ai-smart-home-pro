@@ -1,6 +1,6 @@
 # AI Smart Home PRO – dashboard i sidepanelet
 
-Dette dashboard er lavet med **indbyggede Home Assistant-kort**, uden ekstra HACS-kort eller plugins. Det viser live temperaturer, anbefalinger, datadækning, elpris og historik.
+Dette dashboard er lavet med **indbyggede Home Assistant-kort**, uden ekstra HACS-kort eller plugins. Det viser live temperaturer, anbefalinger, datadækning, elpris og historik. Fanen **IVT Jordvarme** viser også et interaktivt Husdata-anlægsskema, status for kompressor og pumper samt grafer.
 
 ## Installation i sidepanelet (UI, anbefalet)
 
@@ -43,3 +43,19 @@ Genindlæs dashboards eller genstart Home Assistant. Se Home Assistants officiel
 **Vigtigt:** Dette er forventede, ikke verificerede, entity-id'er. Kontroller dem lokalt.
 
 Dashboardet er **kun til overvågning**. Det tilbyder ikke automatisk temperaturændring eller styring af IVT/Nilan.
+
+## IVT Jordvarme-fanen
+
+Kortet er baseret på brugerens eksisterende `picture-elements` med baggrund fra Husdata
+(`portal.husdata.se`) og animerede GIF-symboler. Kortets positionsangivelser og
+sensor-ID'er er bevaret, herunder `sensor.hp_heat_carrier_forwrd`
+(med den oprindelige stavemåde). Det kræver, at disse entiteter findes lokalt,
+og at Home Assistant-browseren kan hente billederne fra Husdatas hjemmeside.
+
+Temanavnet `Nordic Night` skal eksistere lokalt for at få den ønskede stil.
+`card_mod` er valgfrit for den ekstra baggrundsfarve og afrundede hjørner.
+Uden card-mod eller tema vil det almindelige billedkort stadig kunne vises.
+
+Dette er et **dashboard** – ikke en ændring af integrationskoden. Efter opdatering
+af dashboard-YAML på GitHub skal du også indsætte den nye YAML i dit
+Home Assistant-dashboard; HACS synkroniserer ikke et UI-oprettet dashboard automatisk.

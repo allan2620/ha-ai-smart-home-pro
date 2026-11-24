@@ -74,6 +74,227 @@ views:
           **Datadækning:** hvor meget historik der er; ikke AI-sikkerhed.
           
           Ingen automatisk regulering af IVT, Nilan eller gulvvarme.
+  - title: IVT Jordvarme
+    path: ivt-jordvarme
+    icon: mdi:heat-pump
+    type: masonry
+    cards:
+      - type: markdown
+        title: IVT Greenline C11
+        content: >-
+          **Live-overvågning af jordvarmeanlægget.** De animerede symboler
+          viser kompressor, omskifterventil og cirkulationspumper ud fra
+          de tilknyttede Husdata-sensorer. Tryk på et symbol eller tal for
+          at se flere oplysninger. Dette panel styrer ikke varmepumpen.
+      - type: picture-elements
+        image: https://portal.husdata.se/img/BV_3_HA.png
+        theme: Nordic Night
+        grid_options:
+          columns: 12
+          rows: auto
+        elements:
+          - type: image
+            entity: binary_sensor.hp_compressor
+            style:
+              left: 36%
+              top: 62.5%
+              width: 28px
+            state_image:
+              'off': https://portal.husdata.se/img/CompOffTrans.gif
+              'on': https://portal.husdata.se/img/CompAnimTrans.gif
+            tap_action:
+              action: more-info
+          - type: image
+            entity: binary_sensor.hp_switch_valve_1
+            style:
+              left: 77.2%
+              top: 37.5%
+              width: 25px
+            state_image:
+              'off': https://portal.husdata.se/img/VxvUpTrans.gif
+              'on': https://portal.husdata.se/img/VxvDwnTrans.gif
+            tap_action:
+              action: more-info
+          - type: image
+            entity: binary_sensor.hp_pump_cold_circuit
+            style:
+              left: 16%
+              top: 62.5%
+              width: 30px
+            state_image:
+              'off': https://portal.husdata.se/img/PumpRightOffTrans.gif
+              'on': https://portal.husdata.se/img/PumpRightAnimTrans.gif
+            tap_action:
+              action: more-info
+          - type: image
+            entity: binary_sensor.hp_pump_heat_circuit
+            style:
+              left: 70%
+              top: 37.5%
+              width: 30px
+            state_image:
+              'off': https://portal.husdata.se/img/PumpRightOffTrans.gif
+              'on': https://portal.husdata.se/img/PumpRightAnimTrans.gif
+            tap_action:
+              action: more-info
+          - type: state-label
+            entity: sensor.hp_heat_carrier_forwrd
+            title: Fremløb
+            tap_action:
+              action: more-info
+            style:
+              left: 69%
+              top: 66%
+          - type: state-label
+            entity: sensor.hp_heat_carrier_return
+            title: Retur
+            tap_action:
+              action: more-info
+            style:
+              left: 69%
+              top: 82%
+          - type: state-label
+            entity: sensor.hp_brine_in_evaporator
+            title: Brine ind
+            tap_action:
+              action: more-info
+            style:
+              left: 8%
+              top: 57%
+          - type: state-label
+            entity: sensor.hp_brine_out_condenser
+            title: Brine ud
+            tap_action:
+              action: more-info
+            style:
+              left: 15%
+              top: 82%
+          - type: state-label
+            entity: sensor.hp_warm_water_1_top
+            title: Varmt vand
+            tap_action:
+              action: more-info
+            style:
+              left: 88%
+              top: 49%
+          - type: state-label
+            entity: sensor.hp_hot_gas
+            title: Varmgas
+            tap_action:
+              action: more-info
+            style:
+              left: 47%
+              top: 57%
+          - type: state-label
+            entity: sensor.boiler_room_nilan_user_panel_temperature_t15
+            title: Opholdsrum
+            tap_action:
+              action: more-info
+            style:
+              left: 20%
+              top: 37%
+          - type: state-label
+            entity: sensor.hp_outdoor
+            title: Udetemperatur
+            tap_action:
+              action: more-info
+            style:
+              left: 8%
+              top: 20%
+          - type: state-label
+            entity: sensor.hp_add_heat_status
+            title: Tilskudsvarme
+            tap_action:
+              action: more-info
+            style:
+              left: 60.5%
+              top: 41%
+          - type: state-label
+            entity: sensor.hp_power_consumption
+            title: Elforbrug
+            tap_action:
+              action: more-info
+            style:
+              left: 40.6%
+              top: 76.2%
+          - type: state-label
+            entity: sensor.boiler_room_nilan_humidity
+            title: Luftfugtighed
+            tap_action:
+              action: more-info
+            style:
+              left: 19.8%
+              top: 43.3%
+          - type: state-label
+            entity: sensor.hp_radiator_return
+            title: Varmekreds retur
+            tap_action:
+              action: more-info
+            style:
+              left: 64%
+              top: 10%
+          - type: state-label
+            entity: sensor.hp_warm_water_setpoint
+            title: Varmtvand setpunkt
+            tap_action:
+              action: more-info
+            style:
+              left: 88%
+              top: 59%
+              color: '#0000FF'
+          - type: state-label
+            entity: sensor.hp_heating_setpoint
+            title: Varme setpunkt
+            tap_action:
+              action: more-info
+            style:
+              left: 75.7%
+              top: 21.3%
+              color: '#0000FF'
+          - type: state-label
+            entity: sensor.ivt_varmeside_delta_t
+            style:
+              left: 69%
+              top: 74%
+        card_mod:
+          style: |
+            ha-card {
+              background: #243449 !important;
+              border-radius: 22px;
+              overflow: hidden;
+            }
+      - type: entities
+        title: IVT – Driftsstatus
+        show_header_toggle: false
+        entities:
+          - entity: binary_sensor.hp_compressor
+            name: Kompressor
+          - entity: binary_sensor.hp_switch_valve_1
+            name: Omskifterventil
+          - entity: binary_sensor.hp_pump_cold_circuit
+            name: Brinepumpe
+          - entity: binary_sensor.hp_pump_heat_circuit
+            name: Varmekredspumpe
+          - entity: sensor.hp_add_heat_status
+            name: Tilskudsvarme
+          - entity: sensor.hp_power_consumption
+            name: Elforbrug
+      - type: history-graph
+        title: IVT – Fremløb og retur (24 timer)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.hp_heat_carrier_forwrd
+            name: Fremløb
+          - entity: sensor.hp_heat_carrier_return
+            name: Retur
+          - entity: sensor.hp_heating_setpoint
+            name: Setpunkt
+      - type: history-graph
+        title: IVT – Kompressor (24 timer)
+        hours_to_show: 24
+        entities:
+          - entity: binary_sensor.hp_compressor
+            name: Kompressor
   - title: Historik
     path: historik
     icon: mdi:chart-line
